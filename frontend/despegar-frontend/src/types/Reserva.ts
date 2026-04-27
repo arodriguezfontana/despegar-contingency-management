@@ -7,5 +7,5 @@ export interface Reserva {
   estadoVuelo?: string;
   nombreHotel?: string;
   estadoHotel?: string;
-  estadoGeneralReserva: 'OK' | 'CON_CONTINGENCIA';
+  estadoGeneralReserva: 'OK' | 'CON_CONTINGENCIA' | 'RESUELTO';
 }

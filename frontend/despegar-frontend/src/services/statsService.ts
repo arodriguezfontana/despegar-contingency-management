@@ -12,7 +12,8 @@ export const statsService = {
       hotelesCriticos: reservas.filter(
         r => r.estadoGeneralReserva === 'CON_CONTINGENCIA' && 
         r.estadoHotel === 'NO_DISPONIBLE'
-      ).length
+      ).length,
+      resueltas: reservas.filter(r => r.estadoGeneralReserva === 'RESUELTO').length
     };
   }
 };

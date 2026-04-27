@@ -16,5 +16,15 @@ export const reservaService = {
     });
     if (!response.ok) throw new Error('Error al procesar la solución');
     return response.json();
+  },
+
+  resolverReserva: async (id: number): Promise<boolean> => {
+    const response = await fetch(`${API_BASE_URL}/${id}/resolver`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+    return response.ok;
   }
 };
