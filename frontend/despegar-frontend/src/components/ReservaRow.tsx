@@ -37,8 +37,8 @@ export const ReservaRow: React.FC<Props> = ({ reserva, onGestionar, isLoading })
       </td>
       <td className="p-4">
         <span className={`text-[10px] font-black px-3 py-1 rounded-full border shadow-sm ${isCritical
-            ? 'bg-red-50 text-[#fa503f]'
-            : 'bg-green-50 text-green-600'
+          ? 'bg-red-50 text-[#fa503f]'
+          : 'bg-green-50 text-green-600'
           }`}>
           {reserva.estadoGeneralReserva === 'CON_CONTINGENCIA' ? 'CONTINGENCIA' : 'ACTIVO'}
         </span>

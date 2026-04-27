@@ -10,14 +10,13 @@ export default function App() {
   const [solucionActual, setSolucionActual] = useState<Solucion | null>(null);
   const [currentGestionId, setCurrentGestionId] = useState<number | null>(null);
 
- const handleGestionar = async (id: number) => {
-  setCurrentGestionId(id);
-  const data = await resolverContingencia(id);
-  if (data) {
-    setSolucionActual(data);
-    // QUITAMOS el setCurrentGestionId(null) de acá
-  }
-};
+  const handleGestionar = async (id: number) => {
+    setCurrentGestionId(id);
+    const data = await resolverContingencia(id);
+    if (data) {
+      setSolucionActual(data);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#f5f7fa]">
@@ -50,17 +49,17 @@ export default function App() {
           </table>
         </div>
       </div>
-      
-{solucionActual && (
-  <NotificationMobile 
-    solucion={solucionActual} 
-    onClose={() => {
-      setSolucionActual(null);
-      setCurrentGestionId(null); // Lo movemos acá
-    }} 
-    esContingencia={reservas.find(r => r.reservaId === currentGestionId)?.estadoGeneralReserva === 'CON_CONTINGENCIA'}
-  />
-)}
+
+      {solucionActual && (
+        <NotificationMobile
+          solucion={solucionActual}
+          onClose={() => {
+            setSolucionActual(null);
+            setCurrentGestionId(null);
+          }}
+          esContingencia={reservas.find(r => r.reservaId === currentGestionId)?.estadoGeneralReserva === 'CON_CONTINGENCIA'}
+        />
+      )}
     </div>
   );
 }
