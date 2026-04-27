@@ -15,7 +15,7 @@ export const NotificationMobile: React.FC<Props> = ({ solucion, onClose, esConti
 
         <div className="flex-1 bg-white mt-2 overflow-hidden flex flex-col">
           <div className="bg-[#270570] p-6 text-white pt-10">
-            <p className="text-[10px] uppercase tracking-widest opacity-70">App Despegar</p>
+            <p className="text-[10px] uppercase tracking-widest opacity-70">Notificación Despegar</p>
             <h3 className="font-bold text-lg leading-tight mt-1">
               {esContingencia ? '¡Importante!' : '¡Todo listo para tu viaje!'}
             </h3>
@@ -23,7 +23,7 @@ export const NotificationMobile: React.FC<Props> = ({ solucion, onClose, esConti
 
           <div className="p-5 flex-1 space-y-5 overflow-y-auto">
             <div className="flex items-start gap-2 bg-gray-50 p-3 rounded-lg border border-gray-100">
-              <span className="text-lg">{esContingencia ? '🛠️' : '✨'}</span>
+              <span className="text-lg">{esContingencia ? '⚠️' : '✨'}</span>
               <p className="text-[12px] text-gray-600 leading-relaxed italic">
                 "{solucion.mensaje}"
               </p>
@@ -32,10 +32,10 @@ export const NotificationMobile: React.FC<Props> = ({ solucion, onClose, esConti
             {esContingencia ? (
               <div className="animate-in slide-in-from-right duration-500">
                 <div className="bg-green-50 p-4 rounded-xl border border-green-200 shadow-sm">
-                  <span className="text-[9px] font-black text-green-700 uppercase tracking-tighter block mb-1">
+                  <span className="text-[9px] font-bold text-green-700 uppercase tracking-tighter block mb-1">
                     Queremos recompensarte
                   </span>
-                  <p className="text-[13px] font-bold text-green-800 leading-tight">
+                  <p className="text-[13px] font-normal text-green-800 leading-tight">
                     {solucion.beneficio}
                   </p>
                 </div>
