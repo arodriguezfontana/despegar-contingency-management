@@ -5,24 +5,30 @@ import jakarta.validation.constraints.*;
 import lombok.Data;
 
 @Entity
-@Table(name = "hotels")
+@Table(name = "hotel")
 @Data
 public class Hotel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "El nombre del hotel es obligatorio")
+    @NotBlank(message = "El nombre es obligatorio")
     private String nombre;
 
     @NotBlank(message = "La ciudad es obligatoria")
     private String ciudad;
 
+    @NotBlank(message = "La localidad es obligatoria")
+    private String localidad;
+
     @NotNull(message = "El precio es obligatorio")
-    @Positive(message = "El precio debe ser mayor a cero")
+    @Positive(message = "El precio debe ser positivo")
     @Column(name = "precio_por_noche")
     private Double precioPorNoche;
 
-    private String estrellas;
-    private String descripcion;
+    @Min(1) @Max(5)
+    private Integer estrellas;
+
+    @NotBlank(message = "El estado es obligatorio (DISPONIBLE, NO_DISPONIBLE)")
+    private String estado;
 }

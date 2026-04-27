@@ -3,31 +3,35 @@ package com.example.despegarbackend.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Data;
-import java.time.*;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Entity
-@Table(name = "flights")
+@Table(name = "vuelo")
 @Data
 public class Vuelo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "El origen es obligatorio")
-    private String origen;
+    @NotBlank(message = "El origen es obligatorio (Código Aeropuerto)")
+    private String origenCodigo;
 
-    @NotBlank(message = "El destino es obligatorio")
-    private String destino;
+    @NotBlank(message = "El destino es obligatorio (Código Aeropuerto)")
+    private String destinoCodigo;
 
     @NotNull(message = "El precio es obligatorio")
-    @Positive(message = "El precio debe ser mayor a cero")
+    @Positive(message = "El precio debe ser positivo")
     private Double precio;
 
-    @NotBlank(message = "El estado es obligatorio (EJ: DISPONIBLE, CANCELADO)")
+    @NotBlank(message = "El estado es obligatorio (PROGRAMADO, DEMORADO, CANCELADO)")
     private String estado;
 
     @NotNull(message = "La fecha es obligatoria")
-    @Future(message = "La fecha del vuelo debe ser en el futuro")
     @Column(name = "fecha_vuelo")
-    private LocalDateTime fechaVuelo;
+    private LocalDate fechaVuelo;
+
+    @NotNull(message = "La hora es obligatoria")
+    @Column(name = "hora_vuelo")
+    private LocalTime horaVuelo;
 }

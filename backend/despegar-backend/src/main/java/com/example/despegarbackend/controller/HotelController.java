@@ -1,12 +1,13 @@
 package com.example.despegarbackend.controller;
 
-import com.example.despegarbackend.controller.dto.HotelDTO;
+import com.example.despegarbackend.dto.HotelDTO;
+import com.example.despegarbackend.model.Hotel;
 import com.example.despegarbackend.service.HotelService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/hoteles")
@@ -20,17 +21,19 @@ public class HotelController {
     }
 
     @GetMapping
-    public ResponseEntity<List<HotelDTO>> getAll() {
-        List<HotelDTO> lista = service.listarTodos().stream().map(hotel -> {
-            HotelDTO dto = new HotelDTO();
-            dto.setId(hotel.getId());
-            dto.setNombre(hotel.getNombre());
-            dto.setCiudad(hotel.getCiudad());
-            dto.setEstrellas(hotel.getEstrellas());
-            dto.setPrecioPorNoche(hotel.getPrecioPorNoche());
-            return dto;
-        }).collect(Collectors.toList());
+    public ResponseEntity<List<HotelDTO>> getAllHoteles() {
+        List<HotelDTO> hoteles = service.listarHoteles().stream()
+                .map(HotelDTO::desdeModelo)
+                .toList();
+        return ResponseEntity.status(HttpStatus.OK).body(hoteles);
+    }
 
-        return ResponseEntity.ok(lista);
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getHotelById(@PathVariable Long id) {
+        Hotel hotel = service.hotelPorId(id);
+        if (hotel != null) {
+            return ResponseEntity.status(HttpStatus.OK).body(HotelDTO.desdeModelo(hotel));
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Hotel no encontrado.");
     }
 }

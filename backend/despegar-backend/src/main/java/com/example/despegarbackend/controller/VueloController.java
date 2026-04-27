@@ -1,8 +1,9 @@
 package com.example.despegarbackend.controller;
 
-import com.example.despegarbackend.controller.dto.VueloDTO;
+import com.example.despegarbackend.dto.VueloDTO;
 import com.example.despegarbackend.model.Vuelo;
 import com.example.despegarbackend.service.VueloService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,37 +22,19 @@ public class VueloController {
     }
 
     @GetMapping
-    public ResponseEntity<List<VueloDTO>> getAll() {
-        List<VueloDTO> lista = service.listarVuelos().stream().map(vuelo -> {
-            VueloDTO dto = new VueloDTO();
-            dto.setId(vuelo.getId());
-            dto.setOrigen(vuelo.getOrigen());
-            dto.setDestino(vuelo.getDestino());
-            dto.setPrecio(vuelo.getPrecio());
-            dto.setEstado(vuelo.getEstado());
-            dto.setFechaVuelo(vuelo.getFechaVuelo());
-            return dto;
-        }).collect(Collectors.toList());
-
-        return ResponseEntity.ok(lista);
+    public ResponseEntity<List<VueloDTO>> getAllVuelos() {
+        List<VueloDTO> vuelos = service.listarVuelos().stream()
+                .map(VueloDTO::desdeModelo)
+                .toList();
+        return ResponseEntity.status(HttpStatus.OK).body(vuelos);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<VueloDTO> getById(@PathVariable Long id) {
+    public ResponseEntity<?> getVueloById(@PathVariable Long id) {
         Vuelo vuelo = service.vueloPorId(id);
-
-        if (vuelo == null) {
-            return ResponseEntity.notFound().build();
+        if (vuelo != null) {
+            return ResponseEntity.status(HttpStatus.OK).body(VueloDTO.desdeModelo(vuelo));
         }
-
-        VueloDTO dto = new VueloDTO();
-        dto.setId(vuelo.getId());
-        dto.setOrigen(vuelo.getOrigen());
-        dto.setDestino(vuelo.getDestino());
-        dto.setPrecio(vuelo.getPrecio());
-        dto.setEstado(vuelo.getEstado());
-        dto.setFechaVuelo(vuelo.getFechaVuelo());
-
-        return ResponseEntity.ok(dto);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Vuelo no encontrado.");
     }
 }

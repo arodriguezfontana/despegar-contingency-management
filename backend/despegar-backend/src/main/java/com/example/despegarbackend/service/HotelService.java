@@ -14,11 +14,11 @@ public class HotelService {
         this.repo = repo;
     }
 
-    public List<Hotel> listarTodos() {
+    public List<Hotel> listarHoteles() {
         return repo.findAll();
     }
 
-    public Hotel buscarPorId(Long id) {
+    public Hotel hotelPorId(Long id) {
         return repo.findById(id).orElse(null);
     }
 }

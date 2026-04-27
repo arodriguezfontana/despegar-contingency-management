@@ -7,7 +7,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "bookings")
+@Table(name = "reserva")
 @Data
 public class Reserva {
     @Id
@@ -16,26 +16,21 @@ public class Reserva {
 
     @NotNull(message = "El usuario es obligatorio")
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
     @ManyToOne
-    @JoinColumn(name = "flight_id")
+    @JoinColumn(name = "vuelo_id")
     private Vuelo vuelo;
-
-    @NotBlank(message = "El tipo de servicio es obligatorio (VUELO/HOTEL)")
-    @Column(name = "tipo_servicio")
-    private String tipoServicio;
-
-    @NotBlank(message = "El estado es obligatorio")
-    @Column(name = "estado_servicio")
-    private String estadoServicio;
-
-    @NotNull(message = "La fecha de reserva es obligatoria")
-    @Column(name = "fecha_reserva")
-    private LocalDateTime fechaReserva;
 
     @ManyToOne
     @JoinColumn(name = "hotel_id")
     private Hotel hotel;
+
+    @Column(name = "fecha_reserva")
+    private LocalDateTime fechaReserva = LocalDateTime.now();
+
+    @NotBlank(message = "El estado general es obligatorio (ACTIVA, CON_CONTINGENCIA, FINALIZADA)")
+    @Column(name = "estado_general")
+    private String estadoGeneral;
 }

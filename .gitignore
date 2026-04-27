@@ -1,0 +1,19 @@
+# --- Python ---
+**/__pycache__/
+**/.env
+**/.venv
+*.pyc
+
+# --- Java (Maven) ---
+**/target/
+!.mvn/wrapper/maven-wrapper.jar
+
+# --- IDEs (VS Code / IntelliJ) ---
+.idea/
+.vscode/
+*.iml
+*.swp
+
+# --- Sistema ---
+.DS_Store
+Thumbs.db.env

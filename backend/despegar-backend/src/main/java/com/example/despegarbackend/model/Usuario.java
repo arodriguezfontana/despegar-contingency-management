@@ -5,20 +5,20 @@ import jakarta.validation.constraints.*;
 import lombok.Data;
 
 @Entity
-@Table(name = "users")
+@Table(name = "usuario")
 @Data
 public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "El nombre no puede estar vacío")
+    @NotBlank(message = "El nombre es obligatorio")
     private String nombre;
 
     @Email(message = "Debe ser un email válido")
-    @NotBlank
+    @NotBlank(message = "El email es obligatorio")
     private String email;
 
-    @NotBlank(message = "El perfil es obligatorio (FAMILIA, BUSINESS, BUDGET)")
+    @NotBlank(message = "El perfil es obligatorio (ESTANDAR, FAMILIA, TRABAJO, LOW_COST, LUJO)")
     private String perfil;
 }

@@ -1,12 +1,15 @@
 package com.example.despegarbackend.controller;
 
-import com.example.despegarbackend.controller.dto.ReservaDTO;
+import com.example.despegarbackend.dto.ContingenciaDTO;
+import com.example.despegarbackend.dto.ReservaDTO;
+import com.example.despegarbackend.model.Reserva;
+import com.example.despegarbackend.service.IAService;
 import com.example.despegarbackend.service.ReservaService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/reservas")
@@ -14,39 +17,43 @@ import java.util.stream.Collectors;
 public class ReservaController {
 
     private final ReservaService service;
+    private final IAService iaService;
 
-    public ReservaController(ReservaService service) {
+    public ReservaController(ReservaService service, IAService iaService) {
         this.service = service;
+        this.iaService = iaService;
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservaDTO>> getAll() {
-        List<ReservaDTO> lista = service.listarReservas().stream().map(reserva -> {
-            ReservaDTO dto = new ReservaDTO();
-            dto.setId(reserva.getId());
-            dto.setTipoServicio(reserva.getTipoServicio());
-            dto.setEstadoServicio(reserva.getEstadoServicio());
-            dto.setFechaReserva(reserva.getFechaReserva());
+    public ResponseEntity<List<ReservaDTO>> getAllReservas() {
+        List<ReservaDTO> reservas = service.listarReservas().stream()
+                .map(ReservaDTO::desdeModelo)
+                .toList();
+        return ResponseEntity.status(HttpStatus.OK).body(reservas);
+    }
 
-            if (reserva.getUsuario() != null) {
-                dto.setNombreUsuario(reserva.getUsuario().getNombre());
-            }
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getReservaById(@PathVariable Long id) {
+        Reserva reserva = service.buscarPorId(id);
+        if (reserva != null) {
+            return ResponseEntity.status(HttpStatus.OK).body(ReservaDTO.desdeModelo(reserva));
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Reserva no encontrada.");
+    }
 
-            if (reserva.getVuelo() != null) {
-                dto.setDestinoVuelo(reserva.getVuelo().getDestino());
-            } else {
-                dto.setDestinoVuelo("N/A");
-            }
+    @PostMapping("/{id}/solucionar")
+    public ResponseEntity<?> solucionarContingencia(@PathVariable Long id) {
+        Reserva reserva = service.buscarPorId(id);
+        if (reserva == null) return ResponseEntity.notFound().build();
 
-            if (reserva.getHotel() != null) {
-                dto.setNombreHotel(reserva.getHotel().getNombre());
-            } else {
-                dto.setNombreHotel("N/A");
-            }
+        if (reserva.getVuelo() == null && reserva.getHotel() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Error: La reserva #" + id + " no posee ni vuelo ni hotel asociado.");
+        }
 
-            return dto;
-        }).collect(Collectors.toList());
+        ReservaDTO dto = ReservaDTO.desdeModelo(reserva);
+        ContingenciaDTO solucion = iaService.obtenerSolucionIA(dto);
 
-        return ResponseEntity.ok(lista);
+        return ResponseEntity.ok(solucion);
     }
 }
