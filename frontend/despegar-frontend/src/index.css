@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+:root {
+  --ds-color: #68509b;
+  --dt-color: #d3c3f9;
+}
+
+body {
+  @apply bg-[#f5f7fa];
+  margin: 0;
+}
+
+.bg-ds { 
+  background-color: var(--ds-color); 
+}
+
+.bg-dt { 
+  background-color: var(--dt-color); 
+}
