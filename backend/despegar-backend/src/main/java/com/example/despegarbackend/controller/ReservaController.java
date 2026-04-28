@@ -56,4 +56,13 @@ public class ReservaController {
 
         return ResponseEntity.ok(solucion);
     }
+
+    @PatchMapping("/{id}/resolver")
+    public ResponseEntity<?> resolverContingencia(@PathVariable Long id) {
+        Reserva reserva = service.buscarPorId(id);
+        if (reserva == null) return ResponseEntity.notFound().build();
+        reserva.setEstadoGeneral("RESUELTO");
+        service.actualizarReserva(reserva);
+        return ResponseEntity.ok().build();
+    }
 }

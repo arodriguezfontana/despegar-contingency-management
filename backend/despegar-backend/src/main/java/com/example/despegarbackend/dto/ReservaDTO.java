@@ -35,7 +35,7 @@ public record ReservaDTO(
                         r.getVuelo() != null ? r.getVuelo().getOrigenCodigo() : null,
                         r.getVuelo() != null ? r.getVuelo().getDestinoCodigo() : null,
                         r.getVuelo() != null ? r.getVuelo().getEstado() : null,
-                        r.getVuelo() != null ? (r.getVuelo().getFechaVuelo() + " " + r.getVuelo().getHoraVuelo()) : null,
+                        r.getVuelo() != null ? (r.getVuelo().getFechaVuelo() + " | " + r.getVuelo().getHoraVuelo()) : null,
 
                         r.getHotel() != null ? r.getHotel().getId() : null,
                         r.getHotel() != null ? r.getHotel().getNombre() : null,
