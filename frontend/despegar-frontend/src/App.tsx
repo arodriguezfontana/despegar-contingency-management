@@ -60,7 +60,7 @@ export default function App() {
 
         <FiltrosBar filtroActual={filtro} onCambiarFiltro={setFiltro} />
 
-        <div className="bg-white mb-20 rounded-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden">
+        <div className="bg-white mb-5 rounded-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden">
           <table className="w-full text-left">
             <thead className="bg-[#270570] border-b border-gray-100">
               <tr className="text-[11px] uppercase font-bold text-white tracking-widest">

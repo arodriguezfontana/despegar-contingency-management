@@ -4,6 +4,7 @@ export interface Reserva {
   perfilUsuario: 'LOW_COST' | 'BUSINESS' | 'LUJO' | 'ESTÁNDAR' | 'FAMILIA';
   origen: string;
   destino: string;
+  fechaHoraVuelo?: string;
   estadoVuelo?: string;
   nombreHotel?: string;
   estadoHotel?: string;

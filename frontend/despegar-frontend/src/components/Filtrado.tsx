@@ -10,8 +10,8 @@ export const FiltrosBar: React.FC<Props> = ({ filtroActual, onCambiarFiltro }) =
   const botones: { id: FiltroTipo; label: string; icon: string }[] = [
     { id: 'TODOS', label: 'Todos', icon: '📋' },
     { id: 'ALERTAS', label: 'Alertas', icon: '🚨' }, 
-    { id: 'VUELOS', label: 'Vuelos', icon: '✈️' },
-    { id: 'HOTELES', label: 'Hoteles', icon: '🏨' },
+    { id: 'VUELOS', label: 'Vuelos en Alerta', icon: '✈️' },
+    { id: 'HOTELES', label: 'Hoteles en Alerta', icon: '🏨' },
     { id: 'RESUELTOS', label: 'Resueltas', icon: '✅' },
   ];
 

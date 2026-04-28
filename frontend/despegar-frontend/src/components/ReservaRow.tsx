@@ -9,30 +9,31 @@ interface Props {
 
 export const ReservaRow: React.FC<Props> = ({ reserva, onGestionar, isLoading }) => {
   const isCritical = reserva.estadoGeneralReserva === 'CON_CONTINGENCIA';
+  const isResuelto = reserva.estadoGeneralReserva === 'RESUELTO';
 
   const profileNames: Record<string, { label: string }> = {
     'LOW_COST': { label: 'Económico' },
-    'ESTÁNDAR': { label: 'Explorador'},
-    'BUSINESS': { label: 'Viajero'},
+    'ESTÁNDAR': { label: 'Explorador' },
+    'BUSINESS': { label: 'Viajero' },
     'VIP': { label: 'Premium' },
-    'FAMILIA': { label: 'Familia'}
+    'FAMILIA': { label: 'Familia' }
   };
 
   return (
-    <tr className="border-b border-gray-100 hover:bg-[#f5f7fa] transition-colors group">
+    <tr className={`border-b border-gray-100 transition-colors ${isResuelto ? 'bg-gray-50/50' : 'hover:bg-[#f5f7fa]'}`}>
       <td className="p-5">
-        <div className="font-bold text-gray-700 text-sm tracking-tight">
+        <div className={`font-bold text-sm tracking-tight ${isResuelto ? 'text-gray-400' : 'text-gray-700'}`}>
           {reserva.nombreUsuario}
         </div>
         <div className="mt-1 flex items-center gap-2">
-          <span className={`text-[9px] font-bold uppercase px-2 py-0.5 rounded bg-gray-100 text-gray-400 ${profileNames[reserva.perfilUsuario]}}`}>
+          <span className="text-[9px] font-bold uppercase px-2 py-0.5 rounded bg-gray-100 text-gray-400">
             {profileNames[reserva.perfilUsuario]?.label || reserva.perfilUsuario.replace(/_/g, ' ')}
           </span>
         </div>
       </td>
 
       <td className="p-5">
-        <div className="flex flex-col gap-3">
+        <div className={`flex flex-col gap-3 ${isResuelto ? 'opacity-50' : ''}`}>
           {reserva.origen && (
             <div className="flex flex-col">
               <div className="flex items-center gap-2 font-bold text-gray-700 text-sm">
@@ -40,9 +41,16 @@ export const ReservaRow: React.FC<Props> = ({ reserva, onGestionar, isLoading })
                 <span className="font-black">➔</span>
                 <span>{reserva.destino}</span>
               </div>
-              <div className={`text-[11px] font-bold mt-0.5 ${reserva.estadoVuelo !== 'PROGRAMADO' ? 'text-[#fa503f]' : 'text-gray-400'}`}>
+              <div className="text-[11px] font-medium text-gray-500 mt-0.5">
+                <span>{reserva.fechaHoraVuelo} hs</span>
+              </div>
+              <div className={`text-[11px] font-bold mt-0.5 tracking-tight ${reserva.estadoVuelo === 'CANCELADO' ? 'text-[#fa503f]' :
+                reserva.estadoVuelo === 'DEMORADO' ? 'text-[#fa503f]' :
+                  'text-gray-400'
+                }`}>
                 {reserva.estadoVuelo || 'Vuelo No Asignado'}
               </div>
+
             </div>
           )}
 
@@ -60,32 +68,40 @@ export const ReservaRow: React.FC<Props> = ({ reserva, onGestionar, isLoading })
       </td>
 
       <td className="p-5">
-        <span className={`text-[10px] font-bold px-4 py-1.5 rounded-full border-none shadow-sm tracking-tighter ${isCritical
-          ? 'bg-[#dc3533] text-white'
-          : 'bg-[#0f9266] text-white'
-          }`}>
-          {reserva.estadoGeneralReserva === 'CON_CONTINGENCIA' ? 'CONTINGENCIA' : 'ACTIVO'}
-        </span>
+        {!isResuelto && (
+          <span className={`text-[10px] font-black px-4 py-1.5 rounded-full border-none shadow-sm tracking-tighter uppercase animate-in fade-in duration-500 ${isCritical
+            ? 'bg-[#dc3533] text-white'
+            : 'bg-[#0f9266] text-white'
+            }`}>
+            {isCritical ? 'CONTINGENCIA' : 'ACTIVO'}
+          </span>
+        )}
       </td>
 
       <td className="p-5 text-right">
-        <button
-          onClick={() => onGestionar(reserva.reservaId)}
-          disabled={isLoading}
-          className={`relative px-8 py-2.5 rounded-full text-[11px] font-bold tracking-widest transition-all min-w-[130px] shadow-sm active:scale-95
-            ${isLoading
-              ? 'bg-gray-300 text-gray-300 cursor-not-allowed'
-              : 'bg-[#270570] text-white hover:bg-[#1a034d] hover:shadow-md'
-            }`}
-        >
-          <span className={isLoading ? 'invisible' : 'visible'}>GESTIONAR</span>
+        {isResuelto ? (
+          <div className="flex justify-end items-center gap-2 text-[#0f9266] font-bold text-[11px] mr-4">
+            <span>GESTIONADO</span>
+          </div>
+        ) : (
+          <button
+            onClick={() => onGestionar(reserva.reservaId)}
+            disabled={isLoading}
+            className={`relative px-8 py-2.5 rounded-full text-[11px] font-bold tracking-widest transition-all min-w-[130px] shadow-sm active:scale-95
+              ${isLoading
+                ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                : 'bg-[#270570] text-white hover:bg-[#1a034d] hover:shadow-md'
+              }`}
+          >
+            <span className={isLoading ? 'invisible' : 'visible'}>GESTIONAR</span>
 
-          {isLoading && (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-            </div>
-          )}
-        </button>
+            {isLoading && (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              </div>
+            )}
+          </button>
+        )}
       </td>
     </tr>
   );
