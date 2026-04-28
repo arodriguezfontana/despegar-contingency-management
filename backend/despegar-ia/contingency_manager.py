@@ -2,18 +2,15 @@ import os
 from groq import Groq
 from fastapi import FastAPI
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 import json
 from dotenv import load_dotenv
-import requests
 
 load_dotenv()
 
-API_KEY = os.getenv("GROQ_API_KEY")
-URL_BASE_JAVA = os.getenv("JAVA_BACKEND_URL")
-
-client = Groq(api_key=API_KEY)
+client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 app = FastAPI()
+
 
 class ContingencyData(BaseModel):
     reservaId: int
@@ -31,43 +28,84 @@ class ContingencyData(BaseModel):
     estadoHotel: Optional[str] = None
     estadoGeneralReserva: str
 
+
 @app.post("/procesar-contingencia")
 def procesar(data: ContingencyData):
-
     try:
-        contexto = []
-        if data.vueloId and data.estadoVuelo in ['CANCELADO', 'DEMORADO']:
-            resp = requests.get(f"{URL_BASE_JAVA}/vuelos")
-            contexto = resp.json() if resp.status_code == 200 else []
-        elif data.hotelId and data.estadoHotel == 'NO_DISPONIBLE':
-            resp = requests.get(f"{URL_BASE_JAVA}/hoteles")
-            contexto = resp.json() if resp.status_code == 200 else []
+        # Configuración refinada: Sin usar "Se debe", más sutil y sugerente
+        config_perfiles = {
+            "VIP": {
+                "mood": "Exclusividad y Lujo",
+                "idea": "Sabiendo que buscas disfrutar de cada detalle con la máxima excelencia",
+                "detalles": "vistas a lugares con renombre, experiencias exclusivas o servicios premium."
+            },
+            "BUSINESS": {
+                "mood": "Eficiencia y Trabajo",
+                "idea": "Para que puedas optimizar tu tiempo y mantener la productividad en tu viaje",
+                "detalles": "WiFi de alta velocidad, espacios tranquilos, cafés 24hs o zonas de coworking."
+            },
+            "FAMILIA": {
+                "mood": "Protector y Familiar",
+                "idea": "Pensando en la comodidad de todos y en crear momentos especiales para los tuyos",
+                "detalles": "áreas de juegos, lugares espaciosos, actividades para todas las edades y seguridad."
+            },
+            "LOW_COST": {
+                "mood": "Inteligente y Económico",
+                "idea": "Para que aproveches al máximo la ciudad de forma inteligente",
+                "detalles": "actividades gratuitas, lugares con entrada libre y la mejor gastronomía local o street food."
+            },
+            "ESTANDAR": {
+                "mood": "Explorador y Clásico",
+                "idea": "Para que no te pierdas nada de la esencia y los puntos más icónicos",
+                "detalles": "actividades clásicas, lugares populares y puntos turísticos recomendados."
+            }
+        }
 
-        prompt_system = f"""Eres el Asistente Inteligente de Despegar. 
-        Tu objetivo es resolver crisis de viaje con criterio humano.
-        Perfil del cliente: {data.perfilUsuario}."""
+        perfil_actual = config_perfiles.get(data.perfilUsuario.upper(), config_perfiles["ESTANDAR"])
+        es_contingencia = data.estadoGeneralReserva == "CON_CONTINGENCIA"
+
+        tipo_problema = "TODO_OK"
+        if es_contingencia:
+            if data.estadoVuelo == "CANCELADO":
+                tipo_problema = "VUELO_CANCELADO"
+            elif data.estadoVuelo == "DEMORADO":
+                tipo_problema = "VUELO_DEMORADO"
+            elif data.estadoHotel == "NO_DISPONIBLE":
+                tipo_problema = "HOTEL_NO_DISPONIBLE"
+
+        prompt_system = f"""Eres el Experto en el manejo de contingencias post venta de Despegar. Tu prioridad es la TRANQUILIDAD y el TIEMPO de {data.nombreUsuario}.
+        Tu tono debe ser empático y profesional: Despegar ya trabajó para solucionar todo antes de que el usuario lo note.
+
+        REGLAS CRÍTICAS:
+        - NUNCA uses códigos IATA del aeropuerto, usa el nombre de la CIUDAD.
+        - Si el estado es ACTIVO: PROHIBIDO usar palabras como 'lamentamos', 'error' o 'problema'. Sé un anfitrión entusiasta.
+        - Los beneficios NO son premios, son 'compensaciones por cortesía de Despegar' ya impactadas en su cuenta.
+        - Segmentación: El usuario tiene un mood de {perfil_actual['mood']}. Las sugerencias deben ser sutiles, como si conocieras sus gustos sin ser evidente.
+        """
 
         prompt_user = f"""
-        DATOS DE LA RESERVA:
-        - Vuelo: {data.origen} -> {data.destino} (Estado: {data.estadoVuelo if data.vueloId else 'N/A'})
-        - Hotel: {data.nombreHotel} (Estado: {data.estadoHotel if data.hotelId else 'N/A'})
-        - Ubicación actual: {data.origen if data.vueloId else data.localidadHotel}
-        - Alternativas en BD: {contexto}
+        SITUACIÓN: {tipo_problema}
+        CONTEXTO: Origen {data.origen} | Destino {data.destino} | Hotel {data.nombreHotel}.
 
-        REGLAS DE NEGOCIO:
-        1. SI HAY DEMORA DE VUELO: Ofrece 15% OFF en locales de {data.origen} o Sala VIP si es perfil BUSINESS/LUJO.
-        2. SI HAY CANCELACIÓN DE VUELO: Busca en las alternativas un vuelo de {data.origen} a {data.destino} y asígnalo. Suma 25% OFF para su próxima compra.
-        3. SI HOTEL NO DISPONIBLE: Busca en las alternativas el hotel más cercano en {data.localidadHotel} con estrellas >= al original.
-        4. SI TODO ESTÁ BIEN: 
-           - Vuelo OK: Saludo alegre + 3 lugares/actividades en aeropuerto {data.origen}.
-           - Hotel OK: Recomienda 3 lugares/actividades cerca de {data.nombreHotel} en {data.localidadHotel}.
+        INSTRUCCIONES DE RESPUESTA:
+        A) SI ES VUELO_CANCELADO: Informa la reubicación inmediata en proximo vuelo. Presenta el beneficio como una compensación de Despegar por las molestias.
+        B) SI ES VUELO_DEMORADO: Disculpas por la espera en {data.origen}. Presenta el beneficio (Sala VIP, vouchers) como una cortesía para hacer su espera amena.
+        C) SI ES HOTEL_NO_DISPONIBLE: Informa la reubicación en la ciudad {data.destino}. Presenta el upgrade o crédito como una compensación por el cambio de planes.
+        D) SI ES TODO_OK: Saludo cálido confirmando que el itinerario a {data.destino} está perfecto.
+
+        INSTRUCCIONES DE SUGERENCIAS (MÁXIMO 1 POR LISTA):
+        - No uses frases imperativas (no digas "debes" o "haz"). Usa tono de recomendación: "podrías conocer", "te sugerimos", "una gran opción sería".
+        - La sugerencia DEBE empezar integrando sutilmente esta idea: "{perfil_actual['idea']}".
+        - Adapta la sugerencia al entorno de la ciudad (si es playa, nieve, metrópolis, etc.).
+        - Ante dudas, indica que se comuniquen con soporte.
 
         RESPONDE ÚNICAMENTE EN ESTE FORMATO JSON:
         {{
-            "contingencia": "Descripción del problema o 'Sin inconvenientes'",
-            "mensaje": "Mensaje empático personalizado",
-            "beneficio": "Detalle del descuento, sala VIP o nuevo hotel/vuelo",
-            "actividades": ["Actividad 1", "Actividad 2", "Actividad 3"]
+            "contingencia": "Resumen técnico",
+            "mensaje": "Mensaje empático/alegre según situación",
+            "beneficio": "Detalle de la compensación de cortesía (ya impactada)",
+            "sugerencias_origen": ["..."],
+            "sugerencias_destino": ["..."]
         }}
         """
 
@@ -84,11 +122,12 @@ def procesar(data: ContingencyData):
 
     except Exception as e:
         return {
-            "contingencia": "Error técnico",
-            "mensaje": "Estamos teniendo problemas para conectar con el servidor.",
-            "beneficio": "Contacte a soporte.",
-            "actividades": []
+            "contingencia": "Error",
+            "mensaje": "Estamos trabajando para reconectar tu asistencia.",
+            "beneficio": "Soporte técnico notificado.",
+            "sugerencias_origen": [], "sugerencias_destino": []
         }
+
 
 if __name__ == "__main__":
     import uvicorn

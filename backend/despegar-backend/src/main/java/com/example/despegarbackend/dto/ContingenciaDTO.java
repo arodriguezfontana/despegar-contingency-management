@@ -6,5 +6,6 @@ public record ContingenciaDTO(
         String contingencia,
         String mensaje,
         String beneficio,
-        List<String> actividades
+        List<String> sugerencias_origen,
+        List<String> sugerencias_destino
 ) {}
