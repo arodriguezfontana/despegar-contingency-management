@@ -4,10 +4,10 @@ Un proyecto Full Stack desarrollado con la iniciativa de resolver uno de los may
 
 ### Imágenes del proyecto
 <p align="center">
-  <img src="./images/foto1.png" alt="Imagen del proyecto 1" height="250"/>
-  <img src="./images/foto2.png" alt="Imagen del proyecto 2" height="250"/>
-  <img src="./images/foto3.png" alt="Imagen del proyecto 3" height="250"/>
-  <img src="./images/foto4.png" alt="Imagen del proyecto 3" height="250"/>
+  <img src="./images/foto1.png" alt="Imagen del proyecto 1" height="200"/>
+  <img src="./images/foto2.png" alt="Imagen del proyecto 2" height="200"/>
+  <img src="./images/foto3.png" alt="Imagen del proyecto 3" height="200"/>
+  <img src="./images/foto4.png" alt="Imagen del proyecto 3" height="200"/>
 </p>
 
 ### Tecnologías utilizadas
