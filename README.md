@@ -3,7 +3,7 @@
 Un proyecto Full Stack desarrollado con la iniciativa de resolver uno de los mayores desafíos en la industria del turismo: la experiencia del cliente ante cancelaciones, demoras o cambios inesperados en sus viajes.
 
 ### Imágenes del proyecto
-<p align="center">
+<p>
   <img src="./images/foto1.png" alt="Imagen del proyecto 1" height="200"/>
   <img src="./images/foto2.png" alt="Imagen del proyecto 2" height="200"/>
   <img src="./images/foto3.png" alt="Imagen del proyecto 3" height="200"/>
